@@ -42,11 +42,18 @@ app.use((err, _req, res, _next) => {
 // ── Bootstrap: connect DB then start HTTP server ───────────────────────────
 // connectDB() exits the process on failure, so app.listen only runs when the
 // database connection is confirmed.
-const start = async () => {
-  await connectDB();
-  app.listen(PORT, () => {
-    console.log(`PennyWise server listening on http://localhost:${PORT}`);
-  });
-};
+// Vercel imports this Express app to handle incoming requests.
+export default app;
 
-start();
+// Start the HTTP server only when running locally.
+if (!process.env.VERCEL) {
+  const start = async () => {
+    await connectDB();
+
+    app.listen(PORT, () => {
+      console.log(`PennyWise server listening on http://localhost:${PORT}`);
+    });
+  };
+
+  start();
+}
