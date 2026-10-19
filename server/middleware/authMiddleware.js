@@ -27,29 +27,39 @@ const protect = async (req, res, next) => {
 
   const token = authHeader.split(' ')[1];
 
+  let decoded;
   try {
-    // Throws if the signature is invalid or the token has expired.
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-    // Fetch the user from the database to ensure the account still exists.
-    // .select('-password') is a belt-and-suspenders guard; toJSON already
-    // strips the password, but this avoids loading the hash at all.
-    const user = await User.findById(decoded.id).select('-password');
-
-    if (!user) {
-      return res.status(401).json({ message: 'Not authorised — user not found' });
-    }
-
-    req.user = user;
-    next();
+    decoded = jwt.verify(token, process.env.JWT_SECRET);
   } catch (err) {
-    // jwt.verify throws JsonWebTokenError (bad signature) and
-    // TokenExpiredError (expired). Both are 401 situations.
     if (err.name === 'TokenExpiredError') {
       return res.status(401).json({ message: 'Not authorised — token has expired' });
     }
-    return res.status(401).json({ message: 'Not authorised — invalid token' });
+    if (err.name === 'JsonWebTokenError' || err.name === 'NotBeforeError') {
+      return res.status(401).json({ message: 'Not authorised — invalid token' });
+    }
+    console.error('Token verification error:', err.message);
+    return res.status(500).json({ message: 'Internal server error' });
   }
+
+  let user;
+  try {
+    // Fetch the user from the database to ensure the account still exists.
+    // Exclude the password hash from protected-route user data.
+    user = await User.findById(decoded.id).select('-password');
+  } catch (err) {
+    if (err.name === 'CastError') {
+      return res.status(401).json({ message: 'Not authorised — invalid token' });
+    }
+    console.error('Authentication user lookup error:', err.message);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+
+  if (!user) {
+    return res.status(401).json({ message: 'Not authorised — user not found' });
+  }
+
+  req.user = user;
+  return next();
 };
 
 export default protect;
