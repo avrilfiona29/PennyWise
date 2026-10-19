@@ -1,0 +1,48 @@
+/* ── CSS Reset & Base ──────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  /* Brand palette — from blueprint §12 */
+  --color-primary: #2d6a4f;       /* Forest green */
+  --color-primary-light: #52b788; /* Mint accent */
+  --color-primary-muted: #95d5b2; /* Sage accent */
+  --color-bg: #faf8f3;            /* Warm ivory */
+  --color-surface: #ffffff;
+  --color-text: #1e1e1e;          /* Dark charcoal */
+  --color-text-muted: #6b7280;
+  --color-border: #e5e7eb;
+  --color-error: #dc2626;
+  --color-success: #16a34a;
+  --color-warning: #d97706;
+
+  --radius: 0.75rem;
+  --shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+
+  font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--color-text);
+  background-color: var(--color-bg);
+}
+
+body {
+  min-height: 100vh;
+}
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+button {
+  cursor: pointer;
+  font-family: inherit;
+}
