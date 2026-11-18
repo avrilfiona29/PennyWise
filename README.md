@@ -3,7 +3,7 @@
 A full-stack personal finance management application designed to help students track income, expenses, and monthly budgets.
 
 ## 🌐 Live Demo
-https://pennywise-azure-chi.vercel.app/login
+https://pennywise-azure-chi.vercel.app/
 
 ## ✨ Features
 - User registration and login
