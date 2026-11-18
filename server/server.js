@@ -18,6 +18,20 @@ app.use(cors({
 
 app.use(express.json());
 
+// Connect to MongoDB before handling API requests.
+// Reuses the existing connection when already connected.
+app.use(async (_req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (error) {
+    console.error('Database connection failed:', error.message);
+    res.status(503).json({
+      message: 'Database connection unavailable',
+    });
+  }
+});
+
 // ── Routes ─────────────────────────────────────────────────────────────────
 app.use('/api/auth', authRoutes);
 app.use('/api/transactions', transactionRoutes);
